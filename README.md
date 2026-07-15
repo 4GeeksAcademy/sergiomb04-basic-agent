@@ -1,23 +1,75 @@
-# Python Hello
+# Inventario con FastAPI + Agente IA (sin frameworks de agentes)
 
-The most basic boilerplate to start a Python project at 4Geeks is to start your very first Python project from scratch.
+Proyecto compuesto por:
 
-## What to do next?
+- API REST con FastAPI para gestionar inventario persistido en CSV.
+- Agente en Python con loop manual de tools (sin LangChain, sin LlamaIndex, sin AutoGen).
 
-Open the `main.py` file and start writing your code.
+## Estructura
 
-Execute your code by typing the following command on your terminal:
-
-```bash
-$ python main.py
+```text
+api/
+	app.py
+agent.py
+products.csv
+conversation_log.csv
+.env.example
+.gitignore
+README.md
 ```
 
-You can create and include as many python files (a.k.a. modules) as you want using the import statements.
+## Requisitos
 
-## Requirements
+- Python 3.10+
+- Dependencias:
 
-Make sure you have Python installed in your computer. We strongly recommend [installing Python through Pyenv ](https://4geeks.com/how-to/what-is-pyenv-and-how-to-install-pyenv) to avoid version conflicts in the future.
+```bash
+pip install fastapi uvicorn requests python-dotenv openai
+```
 
-### Contributors
+## Configuracion
 
-This template was built as part of the [4Geeks Python Resources](https://4geeks.com/technology/python) for learning at [4Geeks.com](https://4geeks.com) by [Alejandro Sanchez](https://twitter.com/alesanchezr) and [many other contributors](https://github.com/4GeeksAcademy/python-hello/graphs/contributors).
+1. Copia `.env.example` a `.env`.
+2. Completa `GROQ_API_KEY`.
+
+Variables esperadas:
+
+- `GROQ_API_KEY`
+- `GROQ_MODEL` (por defecto `llama-3.1-70b-versatile`)
+- `GROQ_BASE_URL` (por defecto `https://api.groq.com/openai/v1`)
+- `API_BASE_URL` (por defecto `http://127.0.0.1:8000`)
+
+## Ejecutar en dos terminales
+
+### Terminal 1: API
+
+```bash
+uvicorn api.app:app --reload --host 127.0.0.1 --port 8000
+```
+
+### Terminal 2: Agente
+
+```bash
+python agent.py
+```
+
+Comandos de salida del CLI:
+
+- `exit`
+- `quit`
+
+## Endpoints de la API
+
+- `GET /inventory`
+- `POST /inventory`
+- `PATCH /inventory/{product_id}`
+- `GET /inventory/alerts?threshold=10`
+
+## Persistencia y logging
+
+- `products.csv` guarda el inventario y conserva datos tras reiniciar la API.
+- `conversation_log.csv` es append-only y registra:
+	- actor (`user`, `assistant`, `tool`)
+	- message
+	- tool_call
+	- timestamp (ISO 8601)
